@@ -514,6 +514,9 @@ DIRECT_URL=""
 - DATABASE_URL : Transaction + Password + "?pgbouncer=true&connection_limit=1"
 - DIRECT_URL : Session + Password
 
+
+schema.prisma:
+
 ```prisma
 datasource db {
   provider          = "postgresql"
