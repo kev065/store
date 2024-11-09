@@ -965,6 +965,8 @@ export default ProductsGrid;
 
 ### RemotePatterns
 
+edit `next.config.ts`
+
 ```mjs
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -1098,7 +1100,7 @@ import FeaturedProducts from '@/components/home/FeaturedProducts';
 import Hero from '@/components/home/Hero';
 import LoadingContainer from '@/components/global/LoadingContainer';
 import { Suspense } from 'react';
-function HomPage() {
+function HomePage() {
   return (
     <>
       <Hero />
@@ -1108,7 +1110,7 @@ function HomPage() {
     </>
   );
 }
-export default HomPage;
+export default HomePage;
 ```
 
 ### LoadingContainer Component
