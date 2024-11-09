@@ -1405,13 +1405,13 @@ export default NavSearch;
 
 - refactor
 
-ProductsContainer.tsx
+components/products/ProductsContainer.tsx
 
 ```tsx
 const products = await fetchAllProducts({ search });
 ```
 
-- actions
+- utils/actions.ts
 
 ```ts
 export const fetchAllProducts = ({ search = '' }: { search: string }) => {
