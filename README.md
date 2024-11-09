@@ -789,7 +789,7 @@ node prisma/seed
 import FeaturedProducts from '@/components/home/FeaturedProducts';
 import Hero from '@/components/home/Hero';
 
-function HomPage() {
+function HomePage() {
   return (
     <>
       <Hero />
@@ -797,7 +797,7 @@ function HomPage() {
     </>
   );
 }
-export default HomPage;
+export default HomePage;
 ```
 
 ### SectionTitle Component
