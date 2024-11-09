@@ -1160,6 +1160,8 @@ export default loading;
 
 ### Products Page
 
+app/products/page.tsx
+
 ```tsx
 import ProductsContainer from '@/components/products/ProductsContainer';
 
