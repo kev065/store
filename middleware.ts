@@ -1,9 +1,10 @@
-import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
+import { clerkMiddleware } from "@clerk/nextjs/server";
 
-const isPublicRoute = createRouteMatcher(['/', '/products(.*)', '/about']);
+// Define public routes that don't require authentication
+const publicRoutes = ['/', '/products(.*)', '/about'];
 
-export default clerkMiddleware((auth, req) => {
-  if (!isPublicRoute(req)) auth().protect();
+export default clerkMiddleware({
+  publicRoutes: publicRoutes
 });
 
 export const config = {
