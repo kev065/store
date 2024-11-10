@@ -1687,7 +1687,7 @@ export default Providers;
 npm install @clerk/nextjs
 ```
 
-- create .env.local
+- create .env.local and fetch the keys here: [clerk dashboard](https://dashboard.clerk.com/)
 
 ```bash
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
