@@ -13,3 +13,14 @@ export const fetchAllProducts = ({ search = '' }: { search: string }) => {
     },
   });
 };
+
+export const fetchFeaturedProducts = () => {
+  return db.product.findMany({
+    where: {
+      featured: true,
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+  });
+};
