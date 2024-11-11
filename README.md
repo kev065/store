@@ -2603,19 +2603,33 @@ export function validateWithZodSchema<T>(
 actions.ts
 
 ```ts
-try {
+export const createProductAction = async (
+  prevState: any,
+  formData: FormData
+): Promise<{ message: string }> => {
+  const user = await getAuthUser();
+
+  try {
     const rawData = Object.fromEntries(formData);
-    const validatedFields = validateWithZodSchema(productSchema, rawData);
+    const validatedFields = productSchema.safeParse(rawData);
+
+    if (!validatedFields.success) {
+      const errors = validatedFields.error.errors.map((error) => error.message);
+      throw new Error(errors.join(','));
+    }
 
     await db.product.create({
       data: {
-        ...validatedFields,
+        ...validatedFields.data,
         image: '/images/product-1.jpg',
         clerkId: user.id,
       },
     });
-    return { message: 'product created' };
+    return { message: 'Product created' };
+  } catch (error) {
+    return renderError(error);
   }
+};
 ```
 
 ### Image Upload
