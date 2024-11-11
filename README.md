@@ -2866,6 +2866,8 @@ export default ItemsPage;
 
 ### Icon Button
 
+- components/form/Buttons.tsx
+
 ```tsx
 type actionType = 'edit' | 'delete';
 export const IconButton = ({ actionType }: { actionType: actionType }) => {
