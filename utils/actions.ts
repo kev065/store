@@ -64,7 +64,10 @@ export const createProductAction = async (
 
   try {
     const rawData = Object.fromEntries(formData);
+    const file = formData.get('image') as File;
     const validatedFields = validateWithZodSchema(productSchema, rawData);
+    const validatedFile = validateWithZodSchema(imageSchema, { image: file });
+    console.log(validatedFile);
 
     await db.product.create({
       data: {
