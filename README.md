@@ -2559,6 +2559,8 @@ export const productSchema = z.object({
 });
 ```
 
+actions.ts
+
 ```ts
 try {
     const rawData = Object.fromEntries(formData);
