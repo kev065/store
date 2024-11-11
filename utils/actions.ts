@@ -18,8 +18,8 @@ const getAuthUser = async () => {
   return user;
 };
 
-export const fetchAllProducts = ({ search = '' }: { search: string }) => {
-  return db.product.findMany({
+export const fetchAllProducts = async ({ search = '' }: { search: string }) => {
+  return await db.product.findMany({
     where: {
       OR: [
         { name: { contains: search, mode: 'insensitive' } },
@@ -32,8 +32,8 @@ export const fetchAllProducts = ({ search = '' }: { search: string }) => {
   });
 };
 
-export const fetchFeaturedProducts = () => {
-  return db.product.findMany({
+export const fetchFeaturedProducts = async () => {
+  return await db.product.findMany({
     where: {
       featured: true,
     },
@@ -42,6 +42,7 @@ export const fetchFeaturedProducts = () => {
     },
   });
 };
+
 
 export const fetchSingleProduct = async (productId: string) => {
   const product = await db.product.findUnique({
