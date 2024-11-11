@@ -67,17 +67,17 @@ export const createProductAction = async (
     const file = formData.get('image') as File;
     const validatedFields = validateWithZodSchema(productSchema, rawData);
     const validatedFile = validateWithZodSchema(imageSchema, { image: file });
-    console.log(validatedFile);
+    const fullPath = await uploadImage(validatedFile.image);
 
     await db.product.create({
       data: {
         ...validatedFields,
-        image: '/images/product-1.jpg',
+        image: fullPath,
         clerkId: user.id,
       },
     });
-    return { message: 'product created' };
   } catch (error) {
     return renderError(error);
   }
+  redirect('/admin/products');
 };
