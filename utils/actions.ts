@@ -64,21 +64,16 @@ export const createProductAction = async (
 
   try {
     const rawData = Object.fromEntries(formData);
-    const validatedFields = productSchema.safeParse(rawData);
-
-    if (!validatedFields.success) {
-      const errors = validatedFields.error.errors.map((error) => error.message);
-      throw new Error(errors.join(','));
-    }
+    const validatedFields = validateWithZodSchema(productSchema, rawData);
 
     await db.product.create({
       data: {
-        ...validatedFields.data,
+        ...validatedFields,
         image: '/images/product-1.jpg',
         clerkId: user.id,
       },
     });
-    return { message: 'Product created' };
+    return { message: 'product created' };
   } catch (error) {
     return renderError(error);
   }
