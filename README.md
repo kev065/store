@@ -3361,6 +3361,8 @@ export default FavoriteToggleButton;
 
 ### FavoriteToggleForm
 
+- components/products/FavoriteToggleForm.tsx
+
 ```tsx
 'use client';
 
