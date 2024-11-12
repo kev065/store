@@ -3434,6 +3434,8 @@ export const toggleFavoriteAction = async (prevState: {
 
 ### FetchUserFavorites
 
+- utils/actions.ts
+
 ```ts
 export const fetchUserFavorites = async () => {
   const user = await getAuthUser();
@@ -3464,7 +3466,7 @@ function loading() {
 export default loading;
 ```
 
-page.tsx
+- app/favorites/page.tsx
 
 ```tsx
 import { fetchUserFavorites } from '@/utils/actions';
