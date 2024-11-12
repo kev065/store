@@ -2753,7 +2753,7 @@ export const createProductAction = async (
 
 - add supabase url to remote patterns
 
-next.config.mjs
+next.config.ts
 
 ```tsx
 /** @type {import('next').NextConfig} */
@@ -3798,6 +3798,8 @@ export const createReviewAction = async (
 
 ### Rating Component
 
+- components/reviews/Rating.tsx
+
 ```tsx
 import { FaStar, FaRegStar } from 'react-icons/fa';
 
@@ -3864,6 +3866,8 @@ export default Comment;
 ```
 
 ### Fetch Product Reviews
+
+- utils/actions.ts
 
 ```ts
 export const fetchProductReviews = async (productId: string) => {
@@ -3959,7 +3963,7 @@ function ReviewCard({ reviewInfo, children }: ReviewCardProps) {
 export default ReviewCard;
 ```
 
-- next.config.mjs
+- next.config.ts
 
 ```mjs
  {
@@ -3969,6 +3973,8 @@ export default ReviewCard;
 ```
 
 ### fetchProductRating
+
+- utils/actions.ts
 
 ```ts
 export const fetchProductRating = async (productId: string) => {
@@ -3998,7 +4004,23 @@ export const fetchProductRating = async (productId: string) => {
 - components/single-product/ProductRating.tsx
 
 ```tsx
-const { rating, count } = await fetchProductRating(productId);
+import { fetchProductRating } from '@/utils/actions';
+import { FaStar } from 'react-icons/fa';
+
+async function ProductRating({ productId }: { productId: string }) {
+  const { rating, count } = await fetchProductRating(productId);
+
+  const className = `flex gap-1 items-center text-md mt-1 mb-4`;
+  const countValue = `(${count}) reviews`;
+  return (
+    <span className={className}>
+      <FaStar className='w-3 h-3' />
+      {rating} {countValue}
+    </span>
+  );
+}
+
+export default ProductRating;
 ```
 
 ### FetchProductReviewsByUser and DeleteReview Action
