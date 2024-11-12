@@ -241,7 +241,23 @@ export const createReviewAction = async (
   prevState: any,
   formData: FormData
 ) => {
-  return { message: 'review submitted successfully' };
+  const user = await getAuthUser();
+  try {
+    const rawData = Object.fromEntries(formData);
+
+    const validatedFields = validateWithZodSchema(reviewSchema, rawData);
+
+    await db.review.create({
+      data: {
+        ...validatedFields,
+        clerkId: user.id,
+      },
+    });
+    revalidatePath(`/products/${validatedFields.productId}`);
+    return { message: 'Review submitted successfully' };
+  } catch (error) {
+    return renderError(error);
+  }
 };
 
 export const fetchProductReviews = async () => {};
