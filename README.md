@@ -3251,6 +3251,8 @@ export default loading;
 
 ### Favorite Model
 
+- schema.prisma
+
 ```prisma
 model Product {
 favorites Favorite[]
