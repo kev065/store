@@ -102,14 +102,13 @@ export const fetchAdminProducts = async () => {
 export const deleteProductAction = async (prevState: { productId: string }) => {
   const { productId } = prevState;
   await getAdminUser();
-
   try {
-    await db.product.delete({
+    const product = await db.product.delete({
       where: {
         id: productId,
       },
     });
-
+    await deleteImage(product.image);
     revalidatePath('/admin/products');
     return { message: 'product removed' };
   } catch (error) {
