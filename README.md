@@ -2964,6 +2964,8 @@ export const deleteImage = (url: string) => {
 };
 ```
 
+utils/actions.ts
+
 ```ts
 export const deleteProductAction = async (prevState: { productId: string }) => {
   const { productId } = prevState;
