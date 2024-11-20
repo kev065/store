@@ -446,6 +446,9 @@ export const updateCart = async (cart: Cart) => {
     include: {
       product: true, // Include the related product
     },
+    orderBy: {
+      createdAt: 'asc',
+    },
   });
 
   let numItemsInCart = 0;
@@ -459,17 +462,20 @@ export const updateCart = async (cart: Cart) => {
   const shipping = cartTotal ? cart.shipping : 0;
   const orderTotal = cartTotal + tax + shipping;
 
-  await db.cart.update({
+  const currentCart = await db.cart.update({
     where: {
       id: cart.id,
     },
+
     data: {
       numItemsInCart,
       cartTotal,
       tax,
       orderTotal,
     },
+    include: includeProductClause,
   });
+  return { currentCart, cartItems };
 };
 
 export const addToCartAction = async (prevState: any, formData: FormData) => {
@@ -542,4 +548,60 @@ export const updateCartItemAction = async ({
   } catch (error) {
     return renderError(error);
   }
+};
+
+export const createOrderAction = async (prevState: any, formData: FormData) => {
+  const user = await getAuthUser();
+  try {
+    const cart = await fetchOrCreateCart({
+      userId: user.id,
+      errorOnFailure: true,
+    });
+    const order = await db.order.create({
+      data: {
+        clerkId: user.id,
+        products: cart.numItemsInCart,
+        orderTotal: cart.orderTotal,
+        tax: cart.tax,
+        shipping: cart.shipping,
+        email: user.emailAddresses[0].emailAddress,
+      },
+    });
+
+    await db.cart.delete({
+      where: {
+        id: cart.id,
+      },
+    });
+  } catch (error) {
+    return renderError(error);
+  }
+  redirect('/orders');
+};
+export const fetchUserOrders = async () => {
+  const user = await getAuthUser();
+  const orders = await db.order.findMany({
+    where: {
+      clerkId: user.id,
+      isPaid: true,
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+  });
+  return orders;
+};
+
+export const fetchAdminOrders = async () => {
+  const user = await getAdminUser();
+
+  const orders = await db.order.findMany({
+    where: {
+      isPaid: true,
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+  });
+  return orders;
 };
