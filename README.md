@@ -4025,6 +4025,8 @@ export default ProductRating;
 
 ### FetchProductReviewsByUser and DeleteReview Action
 
+- utils/actions.ts
+
 ```ts
 export const fetchProductReviewsByUser = async () => {
   const user = await getAuthUser();
@@ -4356,6 +4358,8 @@ export default SelectProductAmount;
 ```
 
 ### AddToCart Component
+
+- components/single-product/AddToCart.tsx
 
 ```tsx
 'use client';
@@ -4777,7 +4781,7 @@ export default ThirdColumn;
 - actions.ts
 
 ```ts
-eexport const removeCartItemAction = async (
+export const removeCartItemAction = async (
   prevState: any,
   formData: FormData
 ) => {
@@ -4976,6 +4980,8 @@ export default CartPage;
 ```
 
 ### Order Model
+
+- prisma/schema.prisma
 
 ```prisma
 model Order {
@@ -5226,7 +5232,7 @@ NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
 STRIPE_SECRET_KEY=
 ```
 
-- install
+- install stripe
 
 ```sh
 npm install --save @stripe/react-stripe-js @stripe/stripe-js stripe axios
@@ -5234,11 +5240,15 @@ npm install --save @stripe/react-stripe-js @stripe/stripe-js stripe axios
 
 ### Refactor Order and createOrderAction
 
+- prisma/schema.prisma
+
 ```prisma
 model Order {
   isPaid Boolean @default(false)
 }
 ```
+
+- utils/actions.ts
 
 ```ts
 export const createOrderAction = async (prevState: any, formData: FormData) => {
@@ -5339,7 +5349,7 @@ export default function CheckoutPage() {
 
 ### API - Payment Route
 
-- create api/payment/route.ts
+- create app/api/payment/route.ts
 
 ```ts
 import Stripe from 'stripe';
@@ -5410,7 +5420,7 @@ export const POST = async (req: NextRequest) => {
 };
 ```
 
-- product structure
+- product structure (⚠️⚠️DO NOT INCLUDE☢️🛑)
 
 ```ts
 return {
@@ -5440,6 +5450,8 @@ payment/route.ts                    confirm/route.ts            orders page
 ```
 
 ### API - Confirm Route
+
+- create app/api/confirm/route.ts
 
 ```ts
 import Stripe from 'stripe';
