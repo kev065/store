@@ -1,3 +1,4 @@
+import ImageInputContainer from '@/components/form/ImageInputContainer';
 import { fetchAdminProductDetails, updateProductAction } from '@/utils/actions';
 import FormContainer from '@/components/form/FormContainer';
 import FormInput from '@/components/form/FormInput';
