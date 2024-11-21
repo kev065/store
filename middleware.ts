@@ -3,9 +3,13 @@ import { NextResponse } from 'next/server';
 
 const isPublicRoute = createRouteMatcher(['/', '/products(.*)', '/about']);
 const isAdminRoute = createRouteMatcher(['/admin(.*)']);
+const isFavoritesRoute = createRouteMatcher(['/favorites']);
 
 export default clerkMiddleware(async (auth, req) => {
-  const userId = auth().userId;
+  // Await the resolved value of auth
+  const authData = await auth();
+
+  const userId = authData.userId;
   const isAdminUser = userId === process.env.ADMIN_USER_ID;
 
   // Redirect unauthorized users from admin routes
@@ -13,8 +17,13 @@ export default clerkMiddleware(async (auth, req) => {
     return NextResponse.redirect(new URL('/', req.url));
   }
 
-  // For non-public routes, check if user is authenticated
+  // Redirect unauthenticated users from non-public routes
   if (!isPublicRoute(req) && !userId) {
+    return NextResponse.redirect(new URL('/', req.url));
+  }
+
+  // Handle authenticated access to `/favorites`
+  if (isFavoritesRoute(req) && !userId) {
     return NextResponse.redirect(new URL('/', req.url));
   }
 
