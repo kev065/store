@@ -27,7 +27,7 @@ function FormContainer({
     try {
       const result = await action(data);
       setState(result);
-    } catch (error) {
+    } catch {
       setState({ message: 'An error occurred' });
     }
   };
@@ -36,7 +36,7 @@ function FormContainer({
     if (state.message) {
       toast({ description: state.message });
     }
-  }, [state]);
+  }, [state.message, toast]);
 
   return <form onSubmit={handleSubmit}>{children}</form>;
 }
