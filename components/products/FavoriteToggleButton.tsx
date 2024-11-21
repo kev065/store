@@ -1,6 +1,5 @@
 'use client';
 
-import { FaHeart } from 'react-icons/fa';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@clerk/nextjs';
 import { CardSignInButton } from '../form/Buttons';
