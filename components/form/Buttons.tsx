@@ -1,12 +1,12 @@
 'use client';
 
 import { ReloadIcon } from '@radix-ui/react-icons';
-import { useFormStatus } from 'react-dom';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-import { SignInButton } from '@clerk/nextjs';
 import { FaRegHeart, FaHeart } from 'react-icons/fa';
 import { LuTrash2, LuPenSquare } from 'react-icons/lu';
+import { useFormStatus } from 'react-dom';
+import { Button } from '../ui/button';
+import { cn } from '../../lib/utils';
+import { SignInButton } from '@clerk/nextjs';
 
 type btnSize = 'default' | 'lg' | 'sm';
 
@@ -16,13 +16,12 @@ type SubmitButtonProps = {
   size?: btnSize;
 };
 
-export function SubmitButton({
+export const SubmitButton = ({
   className = '',
   text = 'submit',
   size = 'lg',
-}: SubmitButtonProps) {
+}: SubmitButtonProps) => {
   const { pending } = useFormStatus();
-
   return (
     <Button
       type='submit'
@@ -35,15 +34,16 @@ export function SubmitButton({
           <ReloadIcon className='mr-2 h-4 w-4 animate-spin' />
           Please wait...
         </>
-      ) : (
+      ):(
         text
       )}
     </Button>
-  );
+  )
 }
 
 type actionType = 'edit' | 'delete';
-export const IconButton = ({ actionType }: { actionType: actionType }) => {
+
+export const IconButton = ({actionType}: {actionType: actionType}) => {
   const { pending } = useFormStatus();
 
   const renderIcon = () => {
@@ -68,7 +68,7 @@ export const IconButton = ({ actionType }: { actionType: actionType }) => {
       {pending ? <ReloadIcon className=' animate-spin' /> : renderIcon()}
     </Button>
   );
-};
+}
 
 export const CardSignInButton = () => {
   return (

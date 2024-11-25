@@ -7,10 +7,10 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-
 import { fetchAdminOrders } from '@/utils/actions';
 import { formatCurrency, formatDate } from '@/utils/format';
-async function SalesPage() {
+
+async function SalePage() {
   const orders = await fetchAdminOrders();
 
   return (
@@ -28,7 +28,7 @@ async function SalesPage() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {orders.map((order) => {
+          {orders.map(order => {
             const {
               products,
               orderTotal,
@@ -37,7 +37,6 @@ async function SalesPage() {
               createdAt,
               email,
             } = order;
-
             return (
               <TableRow key={order.id}>
                 <TableCell>{email}</TableCell>
@@ -47,11 +46,12 @@ async function SalesPage() {
                 <TableCell>{formatCurrency(shipping)}</TableCell>
                 <TableCell>{formatDate(createdAt)}</TableCell>
               </TableRow>
-            );
+            )
           })}
         </TableBody>
       </Table>
     </div>
-  );
+  )
 }
-export default SalesPage;
+
+export default SalePage

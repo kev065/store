@@ -1,6 +1,7 @@
-import { formatCurrency } from '@/utils/format';
+import { formatCurrency } from "@/utils/format"
 import Image from 'next/image';
 import Link from 'next/link';
+
 export const FirstColumn = ({
   name,
   image,
@@ -21,6 +22,7 @@ export const FirstColumn = ({
     </div>
   );
 };
+
 export const SecondColumn = ({
   name,
   company,

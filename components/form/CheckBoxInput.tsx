@@ -8,11 +8,11 @@ type CheckboxInputProps = {
   defaultChecked?: boolean;
 };
 
-export default function CheckboxInput({
+const CheckBoxInput = ({
   name,
   label,
   defaultChecked = false,
-}: CheckboxInputProps) {
+}: CheckboxInputProps) => {
   return (
     <div className='flex items-center space-x-2'>
       <Checkbox id={name} name={name} defaultChecked={defaultChecked} />
@@ -23,5 +23,7 @@ export default function CheckboxInput({
         {label}
       </label>
     </div>
-  );
+  )
 }
+
+export default CheckBoxInput

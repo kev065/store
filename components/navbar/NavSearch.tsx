@@ -1,9 +1,9 @@
 'use client';
 
-import { Input } from '../ui/input';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from "next/navigation";
+import { Input } from "../ui/input"
 import { useDebouncedCallback } from 'use-debounce';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 
 function NavSearch() {
   const searchParams = useSearchParams();
@@ -11,9 +11,6 @@ function NavSearch() {
   const [search, setSearch] = useState(
     searchParams.get('search')?.toString() || ''
   );
-
-  // Memoize searchParams.get('search')
-  const searchQuery = useMemo(() => searchParams.get('search'), [searchParams]);
 
   const handleSearch = useDebouncedCallback((value: string) => {
     const params = new URLSearchParams(searchParams);
@@ -23,26 +20,26 @@ function NavSearch() {
       params.delete('search');
     }
     replace(`/products?${params.toString()}`);
-  }, 300);
+  }, 300)
 
   useEffect(() => {
-    if (!searchQuery) {
+    if (!searchParams.get('search')) {
       setSearch('');
     }
-  }, [searchQuery]); // Use memoized dependency
+  }, [searchParams.get('search')]);
 
   return (
     <Input
       type='search'
       placeholder='search product...'
-      className='max-w-xs dark:bg-muted'
+      className='max-w-xs dark:bg-muted '
       onChange={(e) => {
         setSearch(e.target.value);
         handleSearch(e.target.value);
       }}
       value={search}
     />
-  );
+  )
 }
 
-export default NavSearch;
+export default NavSearch

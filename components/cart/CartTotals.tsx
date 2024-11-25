@@ -6,25 +6,6 @@ import FormContainer from '../form/FormContainer';
 import { SubmitButton } from '../form/Buttons';
 import { Cart } from '@prisma/client';
 
-function CartTotals({ cart }: { cart: Cart }) {
-  const { cartTotal, shipping, tax, orderTotal } = cart;
-  return (
-    <div>
-      <Card className='p-8 '>
-        <CartTotalRow label='Subtotal' amount={cartTotal} />
-        <CartTotalRow label='Shipping' amount={shipping} />
-        <CartTotalRow label='Tax' amount={tax} />
-        <CardTitle className='mt-8'>
-          <CartTotalRow label='Order Total' amount={orderTotal} lastRow />
-        </CardTitle>
-      </Card>
-      <FormContainer action={createOrderAction}>
-        <SubmitButton text='Place Order' className='w-full mt-8' />
-      </FormContainer>
-    </div>
-  );
-}
-
 function CartTotalRow({
   label,
   amount,
@@ -45,4 +26,25 @@ function CartTotalRow({
   );
 }
 
-export default CartTotals;
+const CartTotals = ({ cart }: { cart: Cart }) => {
+  const { cartTotal, shipping, tax, orderTotal } = cart;
+
+  return (
+    <div>
+      <Card className='p-8'>
+        <CartTotalRow label='Subtotal' amount={cartTotal} />
+        <CartTotalRow label='Shipping' amount={shipping} />
+        <CartTotalRow label='Tax' amount={tax} />
+        <CardTitle className='mt-8'>
+          <CartTotalRow label='Order Total' amount={orderTotal} lastRow />
+        </CardTitle>
+      </Card>
+      {/* first add action createOrderAction!  */}
+      <FormContainer action={createOrderAction}>
+        <SubmitButton text='Place Order' className='w-full mt-8' />
+      </FormContainer>
+    </div>
+  )
+}
+
+export default CartTotals

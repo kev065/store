@@ -1,5 +1,5 @@
-import { Skeleton } from '../ui/skeleton';
-import { Card, CardContent } from '../ui/card';
+import { Card, CardContent } from "../ui/card"
+import { Skeleton } from "../ui/skeleton"
 
 function LoadingContainer() {
   return (
@@ -22,4 +22,5 @@ function LoadingProduct() {
     </Card>
   );
 }
-export default LoadingContainer;
+
+export default LoadingContainer

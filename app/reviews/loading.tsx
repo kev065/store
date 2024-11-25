@@ -2,14 +2,6 @@
 
 import { Card, CardHeader } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-function loading() {
-  return (
-    <section className='grid md:grid-cols-2 gap-8 mt-4 '>
-      <ReviewLoadingCard />
-      <ReviewLoadingCard />
-    </section>
-  );
-}
 
 const ReviewLoadingCard = () => {
   return (
@@ -27,4 +19,15 @@ const ReviewLoadingCard = () => {
   );
 };
 
-export default loading;
+function loading() {
+  return (
+    <section className='grid md:grid-cols-2 gap-8 mt-4 '>
+      <ReviewLoadingCard />
+      <ReviewLoadingCard />
+  </section>
+  )
+}
+
+
+
+export default loading

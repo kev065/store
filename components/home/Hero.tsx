@@ -1,8 +1,10 @@
+import HeroCarousel from "./HeroCarousel"
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import HeroCarousel from './HeroCarousel';
 
-function Hero() {
+type Props = {}
+
+const Hero = () => {
   return (
     <section className='grid grid-cols-1 lg:grid-cols-2 gap-24 items-center'>
       <div>
@@ -21,6 +23,7 @@ function Hero() {
       </div>
       <HeroCarousel />
     </section>
-  );
+  )
 }
-export default Hero;
+
+export default Hero

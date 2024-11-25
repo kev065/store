@@ -1,16 +1,12 @@
 'use server';
+
 import db from '@/utils/db';
 import { redirect } from 'next/navigation';
 import { auth, currentUser } from '@clerk/nextjs/server';
+import { imageSchema, productSchema, reviewSchema, validateWithZodSchema } from './schemas';
+import { deleteImage, uploadImage } from './supabase';
 import { revalidatePath } from 'next/cache';
 import { Cart } from '@prisma/client';
-
-const renderError = (error: unknown): { message: string } => {
-  console.log(error);
-  return {
-    message: error instanceof Error ? error.message : 'An error occurred',
-  };
-};
 
 const getAuthUser = async () => {
   const user = await currentUser();
@@ -26,8 +22,24 @@ const getAdminUser = async () => {
   return user;
 };
 
-export const fetchAllProducts = async ({ search = '' }: { search: string }) => {
-  return await db.product.findMany({
+const renderError = (error: unknown): { message: string } => {
+  console.log(error);
+  return {
+    message: error instanceof Error ? error.message : 'An error occurred',
+  };
+};
+
+export const fetchFeaturedProducts = async () => {
+  const products = await db.product.findMany({
+    where: {
+      featured: true,
+    },
+  });
+  return products;
+};
+
+export const fetchAllProducts = ({ search = '' }: { search: string }) => {
+  return db.product.findMany({
     where: {
       OR: [
         { name: { contains: search, mode: 'insensitive' } },
@@ -40,41 +52,30 @@ export const fetchAllProducts = async ({ search = '' }: { search: string }) => {
   });
 };
 
-export const fetchFeaturedProducts = async () => {
-  return await db.product.findMany({
-    where: {
-      featured: true,
-    },
-    orderBy: {
-      createdAt: 'desc',
-    },
-  });
-};
-
-
 export const fetchSingleProduct = async (productId: string) => {
   const product = await db.product.findUnique({
     where: {
       id: productId,
-    },
-  });
+    }
+  })
   if (!product) {
     redirect('/products');
   }
   return product;
-};
+}
 
 export const createProductAction = async (
   prevState: any,
   formData: FormData
 ): Promise<{ message: string }> => {
-  const user = await getAuthUser();
+  const user = await getAuthUser()
 
   try {
     const rawData = Object.fromEntries(formData);
-    const file = formData.get('image') as File;
     const validatedFields = validateWithZodSchema(productSchema, rawData);
+    const file = formData.get('image') as File;
     const validatedFile = validateWithZodSchema(imageSchema, { image: file });
+    // console.log(validatedFile);
     const fullPath = await uploadImage(validatedFile.image);
 
     await db.product.create({
@@ -103,19 +104,20 @@ export const fetchAdminProducts = async () => {
 export const deleteProductAction = async (prevState: { productId: string }) => {
   const { productId } = prevState;
   await getAdminUser();
+
   try {
     const product = await db.product.delete({
       where: {
         id: productId,
       },
     });
-    await deleteImage(product.image);
+    await deleteImage(product.image)
     revalidatePath('/admin/products');
     return { message: 'product removed' };
   } catch (error) {
     return renderError(error);
   }
-};
+}
 
 export const fetchAdminProductDetails = async (productId: string) => {
   await getAdminUser();
@@ -129,28 +131,38 @@ export const fetchAdminProductDetails = async (productId: string) => {
 };
 
 export const updateProductAction = async (
-  prevState: any,
-  formData: FormData
+  prevState: any, // Предыдущее состояние продукта
+  formData: FormData // Новые данные формы для обновления продукта
 ) => {
-  await getAdminUser();
+  await getAdminUser(); // Проверяем, что текущий пользователь — администратор
   try {
+    // Извлекаем ID продукта из данных формы
     const productId = formData.get('id') as string;
+
+    // Преобразуем FormData в объект для дальнейшей обработки
     const rawData = Object.fromEntries(formData);
 
+    // Валидируем поля формы с помощью схемы Zod
     const validatedFields = validateWithZodSchema(productSchema, rawData);
 
+    // Обновляем продукт в базе данных
     await db.product.update({
       where: {
         id: productId,
       },
       data: {
-        ...validatedFields,
+        ...validatedFields, // Используем валидированные данные для обновления
       },
     });
-    revalidatePath(`/admin/products/${productId}/edit`);
-    return { message: 'Product updated successfully' };
+
+     // Обновляем кэш страницы редактирования
+     revalidatePath(`/admin/products/${productId}/edit`);
+
+     // Возвращаем сообщение об успешном обновлении
+     return { message: 'Product updated successfully' };
   } catch (error) {
-    return renderError(error);
+     // Обрабатываем ошибки и возвращаем ошибку
+     return renderError(error);
   }
 };
 
@@ -158,7 +170,7 @@ export const updateProductImageAction = async (
   prevState: any,
   formData: FormData
 ) => {
-  await getAuthUser();
+  await getAuthUser()
   try {
     const image = formData.get('image') as File;
     const productId = formData.get('id') as string;
@@ -167,6 +179,7 @@ export const updateProductImageAction = async (
     const validatedFile = validateWithZodSchema(imageSchema, { image });
     const fullPath = await uploadImage(validatedFile.image);
     await deleteImage(oldImageUrl);
+
     await db.product.update({
       where: {
         id: productId,
@@ -182,20 +195,6 @@ export const updateProductImageAction = async (
   }
 };
 
-export const fetchFavoriteId = async ({ productId }: { productId: string }) => {
-  const user = await getAuthUser();
-  const favorite = await db.favorite.findFirst({
-    where: {
-      productId,
-      clerkId: user.id,
-    },
-    select: {
-      id: true,
-    },
-  });
-  return favorite?.id || null;
-};
-
 export const toggleFavoriteAction = async (prevState: {
   productId: string;
   favoriteId: string | null;
@@ -203,6 +202,7 @@ export const toggleFavoriteAction = async (prevState: {
 }) => {
   const user = await getAuthUser();
   const { productId, favoriteId, pathname } = prevState;
+
   try {
     if (favoriteId) {
       await db.favorite.delete({
@@ -223,6 +223,20 @@ export const toggleFavoriteAction = async (prevState: {
   } catch (error) {
     return renderError(error);
   }
+};
+
+export const fetchFavoriteId = async ({ productId }: { productId: string }) => {
+  const user = await getAuthUser();
+  const favorite = await db.favorite.findFirst({
+    where: {
+      productId,
+      clerkId: user.id,
+    },
+    select: {
+      id: true,
+    },
+  });
+  return favorite?.id || null;
 };
 
 export const fetchUserFavorites = async () => {
@@ -269,10 +283,9 @@ export const fetchProductReviews = async (productId: string) => {
     orderBy: {
       createdAt: 'desc',
     },
-  });
+  })
   return reviews;
 };
-
 export const fetchProductRating = async (productId: string) => {
   const result = await db.review.groupBy({
     by: ['productId'],
@@ -285,7 +298,7 @@ export const fetchProductRating = async (productId: string) => {
     where: {
       productId,
     },
-  });
+  })
 
   // empty array if no reviews
   return {
@@ -293,7 +306,23 @@ export const fetchProductRating = async (productId: string) => {
     count: result[0]?._count.rating ?? 0,
   };
 };
+export const deleteReviewAction = async (prevState: { reviewId: string }) => {
+  const { reviewId } = prevState;
+  const user = await getAuthUser();
 
+  try {
+    await db.review.delete({
+      where: {
+        id: reviewId,
+        clerkId: user.id,
+      },
+    });
+    revalidatePath('/reviews');
+    return { message: 'Review deleted successfully' };
+  } catch (error) {
+    return renderError(error);
+  }
+};
 export const fetchProductReviewsByUser = async () => {
   const user = await getAuthUser();
   const reviews = await db.review.findMany({
@@ -311,26 +340,8 @@ export const fetchProductReviewsByUser = async () => {
         },
       },
     },
-  });
+  })
   return reviews;
-};
-export const deleteReviewAction = async (prevState: { reviewId: string }) => {
-  const { reviewId } = prevState;
-  const user = await getAuthUser();
-
-  try {
-    await db.review.delete({
-      where: {
-        id: reviewId,
-        clerkId: user.id,
-      },
-    });
-
-    revalidatePath('/reviews');
-    return { message: 'Review deleted successfully' };
-  } catch (error) {
-    return renderError(error);
-  }
 };
 
 export const findExistingReview = async (userId: string, productId: string) => {
@@ -361,13 +372,13 @@ const fetchProduct = async (productId: string) => {
     where: {
       id: productId,
     },
-  });
-
+  })
   if (!product) {
     throw new Error('Product not found');
   }
-  return product;
+  return product
 };
+
 const includeProductClause = {
   cartItems: {
     include: {
@@ -379,7 +390,7 @@ const includeProductClause = {
 export const fetchOrCreateCart = async ({
   userId,
   errorOnFailure = false,
-}: {
+}:{
   userId: string;
   errorOnFailure?: boolean;
 }) => {
@@ -388,7 +399,7 @@ export const fetchOrCreateCart = async ({
       clerkId: userId,
     },
     include: includeProductClause,
-  });
+  })
 
   if (!cart && errorOnFailure) {
     throw new Error('Cart not found');
@@ -410,7 +421,7 @@ const updateOrCreateCartItem = async ({
   productId,
   cartId,
   amount,
-}: {
+}:{
   productId: string;
   cartId: string;
   amount: number;
@@ -420,9 +431,9 @@ const updateOrCreateCartItem = async ({
       productId,
       cartId,
     },
-  });
+  })
 
-  if (cartItem) {
+  if (cartItem){
     cartItem = await db.cartItem.update({
       where: {
         id: cartItem.id,
@@ -430,11 +441,11 @@ const updateOrCreateCartItem = async ({
       data: {
         amount: cartItem.amount + amount,
       },
-    });
+    })
   } else {
     cartItem = await db.cartItem.create({
       data: { amount, productId, cartId },
-    });
+    })
   }
 };
 
@@ -449,7 +460,7 @@ export const updateCart = async (cart: Cart) => {
     orderBy: {
       createdAt: 'asc',
     },
-  });
+  })
 
   let numItemsInCart = 0;
   let cartTotal = 0;
@@ -458,6 +469,7 @@ export const updateCart = async (cart: Cart) => {
     numItemsInCart += item.amount;
     cartTotal += item.amount * item.product.price;
   }
+
   const tax = cart.taxRate * cartTotal;
   const shipping = cartTotal ? cart.shipping : 0;
   const orderTotal = cartTotal + tax + shipping;
@@ -466,7 +478,6 @@ export const updateCart = async (cart: Cart) => {
     where: {
       id: cart.id,
     },
-
     data: {
       numItemsInCart,
       cartTotal,
@@ -477,6 +488,7 @@ export const updateCart = async (cart: Cart) => {
   });
   return { currentCart, cartItems };
 };
+// end updateCart
 
 export const addToCartAction = async (prevState: any, formData: FormData) => {
   const user = await getAuthUser();
@@ -488,9 +500,10 @@ export const addToCartAction = async (prevState: any, formData: FormData) => {
     await updateOrCreateCartItem({ productId, cartId: cart.id, amount });
     await updateCart(cart);
   } catch (error) {
-    return renderError(error);
+    return renderError(error)
   }
-  redirect('/cart');
+  
+  redirect("/cart")
 };
 
 export const removeCartItemAction = async (
@@ -503,20 +516,20 @@ export const removeCartItemAction = async (
     const cart = await fetchOrCreateCart({
       userId: user.id,
       errorOnFailure: true,
-    });
+    })
     await db.cartItem.delete({
       where: {
         id: cartItemId,
         cartId: cart.id,
       },
-    });
-
+    })
     await updateCart(cart);
     revalidatePath('/cart');
     return { message: 'Item removed from cart' };
   } catch (error) {
     return renderError(error);
   }
+ 
 };
 
 export const updateCartItemAction = async ({
@@ -532,7 +545,7 @@ export const updateCartItemAction = async ({
     const cart = await fetchOrCreateCart({
       userId: user.id,
       errorOnFailure: true,
-    });
+    })
     await db.cartItem.update({
       where: {
         id: cartItemId,
@@ -541,7 +554,7 @@ export const updateCartItemAction = async ({
       data: {
         amount,
       },
-    });
+    })
     await updateCart(cart);
     revalidatePath('/cart');
     return { message: 'cart updated' };
@@ -550,10 +563,12 @@ export const updateCartItemAction = async ({
   }
 };
 
+// Создание заказа
 export const createOrderAction = async (prevState: any, formData: FormData) => {
   const user = await getAuthUser();
   let orderId: null | string = null;
   let cartId: null | string = null;
+
   try {
     const cart = await fetchOrCreateCart({
       userId: user.id,
@@ -575,8 +590,10 @@ export const createOrderAction = async (prevState: any, formData: FormData) => {
         tax: cart.tax,
         shipping: cart.shipping,
         email: user.emailAddresses[0].emailAddress,
+        isPaid: false,  // Заказ ещё не оплачен
       },
     });
+
     orderId = order.id;
   } catch (error) {
     return renderError(error);
@@ -584,6 +601,7 @@ export const createOrderAction = async (prevState: any, formData: FormData) => {
   redirect(`/checkout?orderId=${orderId}&cartId=${cartId}`);
 };
 
+// Получение заказов пользователя
 export const fetchUserOrders = async () => {
   const user = await getAuthUser();
   const orders = await db.order.findMany({
@@ -598,8 +616,9 @@ export const fetchUserOrders = async () => {
   return orders;
 };
 
+// Получение всех заказов (для администратора)
 export const fetchAdminOrders = async () => {
-  const user = await getAdminUser();
+  await getAdminUser();
 
   const orders = await db.order.findMany({
     where: {

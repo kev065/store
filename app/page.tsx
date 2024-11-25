@@ -2,7 +2,10 @@ import FeaturedProducts from '@/components/home/FeaturedProducts';
 import Hero from '@/components/home/Hero';
 import LoadingContainer from '@/components/global/LoadingContainer';
 import { Suspense } from 'react';
-function HomePage() {
+
+
+
+const HomePage = () => {
   return (
     <>
       <Hero />
@@ -10,6 +13,7 @@ function HomePage() {
         <FeaturedProducts />
       </Suspense>
     </>
-  );
+  )
 }
-export default HomePage;
+
+export default HomePage

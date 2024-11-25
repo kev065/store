@@ -1,3 +1,4 @@
+
 import {
   Carousel,
   CarouselContent,
@@ -14,7 +15,8 @@ import hero4 from '@/public/images/hero4.jpg';
 
 const carouselImages = [hero1, hero2, hero3, hero4];
 
-function HeroCarousel() {
+const HeroCarousel = () => {
+
   return (
     <div className='hidden lg:block'>
       <Carousel>
@@ -39,6 +41,7 @@ function HeroCarousel() {
         <CarouselNext />
       </Carousel>
     </div>
-  );
+  )
 }
-export default HeroCarousel;
+
+export default HeroCarousel

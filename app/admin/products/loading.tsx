@@ -1,8 +1,11 @@
 'use client';
 
-import LoadingTable from '@/components/global/LoadingTable';
+import LoadingTable from "@/components/global/LoadingTable";
 
-function loading() {
-  return <LoadingTable />;
+const loading = () => {
+  return (
+    <LoadingTable />
+  )
 }
-export default loading;
+
+export default loading
